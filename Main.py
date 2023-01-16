@@ -3,6 +3,7 @@ from Paddle import Paddle
 from Window import Window
 from Ball import Ball
 from Brick import Brick
+from Game import Game
 
 # Définition des couleurs (R, G, B)
 black = (0, 0, 0)
@@ -36,48 +37,32 @@ ball = objBall.createBall(objWindow)
 # (-1, 1) correspond à un déplacement vers la gauche et vers le haut
 direction = (1, 1)
 
+# création de l'objet jeu
+
+objGame = Game(paddle, ball, bricks, 60, direction)
+
 
 # Boucle principale
 while True:
-    # Gestion des événements
-    for event in pygame.event.get():
-        # Si l'utilisateur quitte, on arrête la boucle
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
 
-    # Déplacement de la raquette avec les flèches gauche et droite
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        paddle.x -= objPaddle.getSpeed()
-    if keys[pygame.K_RIGHT]:
-        paddle.x += objPaddle.getSpeed()
+    objGame.playerQuit()
+
+    objGame.paddleMove(objPaddle)
 
     # Empêcher la raquette de sortir de l'écran
-    if paddle.x < 0:
-        paddle.x = 0
-    if paddle.x > objWindow.getWidth() - objPaddle.getWidth():
-        paddle.x = objWindow.getWidth() - objPaddle.getWidth()
+    objGame.gameBorder(objWindow, objPaddle)
 
     # Déplacement de la balle
-    ball.x += direction[0] * objBall.getSpeed()
-    ball.y += direction[1] * objBall.getSpeed()
+    objGame.ballMove(objBall)
 
     # Inversion de la direction de la balle si elle touche un bord de l'écran
-    if ball.x > objWindow.getWidth() - objBall.getSize() or ball.x < 0:
-        direction = (-direction[0], direction[1])
-    if ball.y < 0:
-        direction = (direction[0], -direction[1])
+    objGame.ballBounce(objWindow, objBall)
 
     # Si la balle touche la raquette, on inverse sa direction
-    if ball.colliderect(paddle):
-        direction = (direction[0], -direction[1])
+    objGame.ballBounceDirection()
 
     # Suppression de la brique si la balle la touche
-    for brick in bricks:
-        if ball.colliderect(brick):
-            bricks.remove(brick)
-            direction = (direction[0], -direction[1])
+    objGame.brickDelete()
 
     # Arrêt de la boucle si toutes les briques ont été détruites
     if len(bricks) == 0:
