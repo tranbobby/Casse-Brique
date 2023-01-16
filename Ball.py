@@ -1,4 +1,5 @@
 import pygame
+from Paddle import Paddle
 
 
 class Ball:
@@ -24,7 +25,6 @@ class Ball:
 
 # getter
 
-
     def getSpeed(self):
         return self.speed
 
@@ -33,6 +33,6 @@ class Ball:
 
 # function
 
-    def createBall(self, window):
-        return pygame.Rect(window.getWidth() // 2, window.getHeight() //
-                           2, self.getSize(), self.getSize())
+    def createBall(self, window, paddle):
+        return pygame.Rect(window.getWidth() // 2 - (self.getSize()//2),
+                           window.getHeight() - paddle.getHeight()-self.getSize()-15, self.getSize(), self.getSize())
